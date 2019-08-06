@@ -1,4 +1,4 @@
-package de.hpi.isg;
+package de.hpi.isg.io;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;

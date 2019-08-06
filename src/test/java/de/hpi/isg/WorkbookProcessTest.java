@@ -12,12 +12,13 @@ import java.util.Objects;
  * @author Lan Jiang
  * @since 2019-08-06
  */
-public class ExcelFileReaderTest {
+public class WorkbookProcessTest {
 
     @Test
-    public void testLoadWorkbook() throws IOException {
+    public void testProcessSheet() throws IOException {
         ExcelFileReader excelFileReader = new ExcelFileReader(Objects.requireNonNull(getClass().getClassLoader().getResource("1-qtr-2011-directors.xls")).getPath());
         Workbook workbook = excelFileReader.loadWorkBook();
-        Assert.assertNotNull(workbook);
+        WorkbookProcessor workbookProcessor = new WorkbookProcessor(workbook);
+        workbookProcessor.processWorkbook();
     }
 }
