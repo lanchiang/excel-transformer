@@ -1,5 +1,6 @@
 package de.hpi.isg.io;
 
+import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
@@ -19,7 +20,11 @@ public class ExcelFileReader {
     }
 
     public Workbook loadWorkBook() throws IOException {
-        Workbook workbook = WorkbookFactory.create(new File(filePath));
-        return workbook;
+        try {
+            Workbook workbook = WorkbookFactory.create(new File(filePath));
+            return workbook;
+        } catch (NotOLE2FileException e) {
+            return null;
+        }
     }
 }

@@ -1,11 +1,13 @@
 package de.hpi.isg;
 
+import de.hpi.isg.io.SheetToTextFileWriter;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,8 +32,18 @@ public class WorkbookProcessor {
         for (int i = 0; i < numOfSheets; i++) {
             Sheet sheet = workbook.getSheetAt(i);
             List<List<String>> curatedSheetData = processSheet(sheet);
+            WrappedSheet wrappedSheet = new WrappedSheet(workbook.getSheetName(i), curatedSheetData);
+
+            try {
+                SheetToTextFileWriter writer = new SheetToTextFileWriter(wrappedSheet.getSheetFileName());
+                for (List<String> curatedRow : curatedSheetData) {
+                    writer.writeLine(curatedRow);
+                }
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return;
     }
 
     private List<List<String>> processSheet(Sheet sheet) {
@@ -39,6 +51,9 @@ public class WorkbookProcessor {
         int lastRowNum = sheet.getLastRowNum();
 
         List<List<String>> curatedSheetData = new LinkedList<>();
+
+        int globalFirstCellNum = Integer.MAX_VALUE;
+        int globalLastCellNum = 0;
 
         // process all the empty lines before the first row.
         for (int i=0; i<firstRowNum; i++) {
@@ -57,6 +72,14 @@ public class WorkbookProcessor {
 
             int firstCellNum = row.getFirstCellNum();
             int lastCellNum = row.getLastCellNum();
+
+            if (firstCellNum < globalFirstCellNum) {
+                globalFirstCellNum = firstCellNum;
+            }
+            if (lastCellNum > globalLastCellNum) {
+                globalLastCellNum = lastCellNum;
+            }
+
             for (int j = 0; j < firstCellNum; j++) {
                 // for the cells starting before the firstCellNum, deem as an empty cell.
                 curatedRow.add("");
@@ -74,7 +97,10 @@ public class WorkbookProcessor {
             }
             curatedSheetData.add(curatedRow);
         }
-        return curatedSheetData;
+        if (globalFirstCellNum < 0) {
+            globalFirstCellNum = 0;
+        }
+        return padding(curatedSheetData, globalFirstCellNum, globalLastCellNum);
     }
 
     private String getCellStringValue(Cell cell, CellType cellType) {
@@ -90,7 +116,16 @@ public class WorkbookProcessor {
         return value;
     }
 
-    private void padSeparators() {
-
+    private List<List<String>> padding(List<List<String>> curatedSheetData, int globalFirstCellNum, int globalLastCellNum) {
+        List<List<String>> normalized = new LinkedList<>();
+        for (List<String> curatedRow : curatedSheetData) {
+            List<String> normalizedRow = curatedRow.subList(globalFirstCellNum, curatedRow.size());
+            int tailOffset = globalLastCellNum - normalizedRow.size();
+            for (int i = 0; i < tailOffset; i++) {
+                normalizedRow.add("");
+            }
+            normalized.add(normalizedRow);
+        }
+        return normalized;
     }
 }
