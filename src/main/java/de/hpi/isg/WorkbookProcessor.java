@@ -30,7 +30,15 @@ public class WorkbookProcessor {
         int numOfSheets = workbook.getNumberOfSheets();
 
         for (int i = 0; i < numOfSheets; i++) {
+            System.out.println(workbook.getSheetAt(i).getSheetName());
+
             Sheet sheet = workbook.getSheetAt(i);
+
+            SheetVisibility visibility = workbook.getSheetVisibility(i);
+            if (visibility != SheetVisibility.VISIBLE) {
+                continue;
+            }
+
             List<List<String>> curatedSheetData = processSheet(sheet);
             WrappedSheet wrappedSheet = new WrappedSheet(workbook.getSheetName(i), curatedSheetData);
 
@@ -119,6 +127,10 @@ public class WorkbookProcessor {
     private List<List<String>> padding(List<List<String>> curatedSheetData, int globalFirstCellNum, int globalLastCellNum) {
         List<List<String>> normalized = new LinkedList<>();
         for (List<String> curatedRow : curatedSheetData) {
+            if (curatedRow.size() == 0) {
+                continue;
+            }
+
             List<String> normalizedRow = curatedRow.subList(globalFirstCellNum, curatedRow.size());
             int tailOffset = globalLastCellNum - normalizedRow.size();
             for (int i = 0; i < tailOffset; i++) {

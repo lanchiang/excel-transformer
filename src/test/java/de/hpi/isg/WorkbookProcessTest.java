@@ -2,7 +2,6 @@ package de.hpi.isg;
 
 import de.hpi.isg.io.ExcelFileReader;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -21,6 +20,12 @@ public class WorkbookProcessTest {
 
         assert inputExcels != null;
         for (File excelFile : inputExcels) {
+
+            if (!excelFile.getName().equals("Businesses_Where_RV_less_than_12000.xls")) {
+                continue;
+            }
+
+            System.out.println(excelFile.getName());
             ExcelFileReader excelFileReader = new ExcelFileReader(excelFile.getPath());
             Workbook workbook = excelFileReader.loadWorkBook();
 
@@ -31,10 +36,5 @@ public class WorkbookProcessTest {
             WorkbookProcessor workbookProcessor = new WorkbookProcessor(workbook);
             workbookProcessor.processWorkbook();
         }
-
-        ExcelFileReader excelFileReader = new ExcelFileReader(Objects.requireNonNull(getClass().getClassLoader().getResource("1-qtr-2011-directors.xls")).getPath());
-        Workbook workbook = excelFileReader.loadWorkBook();
-        WorkbookProcessor workbookProcessor = new WorkbookProcessor(workbook);
-        workbookProcessor.processWorkbook();
     }
 }
