@@ -1,6 +1,8 @@
 package de.hpi.isg;
 
 import de.hpi.isg.concept.WrappedSheet;
+import de.hpi.isg.exceptions.FormulaParseException;
+import de.hpi.isg.io.SheetToTextFileWriter;
 import lombok.Getter;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -8,6 +10,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,7 +25,7 @@ public class PoiWorkBookProcessor extends WorkBookProcessor {
     private final FormulaEvaluator evaluator;
 
     @Getter
-    private WrappedSheet wrappedSheet;
+    private List<WrappedSheet> wrappedSheets = new LinkedList<>();
 
     public PoiWorkBookProcessor(Workbook workbook) {
         this.workbook = workbook;
@@ -44,22 +47,18 @@ public class PoiWorkBookProcessor extends WorkBookProcessor {
                 continue;
             }
 
-            List<List<String>> curatedSheetData = processSheet(sheet);
-            wrappedSheet = new WrappedSheet(workbook.getSheetName(i), curatedSheetData);
+            List<List<String>> curatedSheetData;
+            try {
+                curatedSheetData = processSheet(sheet);
+            } catch (FormulaParseException ignored) {
+                continue;
+            }
 
-//            try {
-//                SheetToTextFileWriter writer = new SheetToTextFileWriter(wrappedSheet.getSheetFileName());
-//                for (List<String> curatedRow : curatedSheetData) {
-//                    writer.writeLine(curatedRow);
-//                }
-//                writer.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            wrappedSheets.add(new WrappedSheet(workbook.getSheetName(i), curatedSheetData));
         }
     }
 
-    private List<List<String>> processSheet(Sheet sheet) {
+    private List<List<String>> processSheet(final Sheet sheet) throws FormulaParseException {
         int firstRowNum = sheet.getFirstRowNum();
         int lastRowNum = sheet.getLastRowNum();
 
@@ -116,15 +115,17 @@ public class PoiWorkBookProcessor extends WorkBookProcessor {
         return padding(curatedSheetData, globalFirstCellNum, globalLastCellNum);
     }
 
-    private String getCellStringValue(Cell cell, CellType cellType) {
-        String value;
+    private String getCellStringValue(Cell cell, CellType cellType) throws FormulaParseException {
+        String value = null;
         DataFormatter dataFormatter = new DataFormatter();
-        switch (cellType) {
-            case FORMULA:
+        if (cellType == CellType.FORMULA) {
+            try {
                 value = dataFormatter.formatCellValue(cell, evaluator);
-                break;
-            default:
-                value = dataFormatter.formatCellValue(cell);
+            } catch (RuntimeException e) {
+                throw new FormulaParseException(e);
+            }
+        } else {
+            value = dataFormatter.formatCellValue(cell);
         }
         return value;
     }

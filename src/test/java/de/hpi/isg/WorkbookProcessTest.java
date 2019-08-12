@@ -1,5 +1,7 @@
 package de.hpi.isg;
 
+import de.hpi.isg.exceptions.FormulaParseException;
+import de.hpi.isg.io.ExcelFileReader;
 import de.hpi.isg.io.TheExcelFileReader;
 import org.apache.poi.hssf.OldExcelFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -18,29 +20,25 @@ public class WorkbookProcessTest {
     public void testProcessSheet() throws IOException {
         File[] inputExcels = new File("/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk").listFiles();
 
+        File inputExcelFileFolder = new File("/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk_converted");
+
+        if (inputExcelFileFolder.delete()) {
+            if (!inputExcelFileFolder.mkdir()) {
+                return;
+            }
+        }
+
         assert inputExcels != null;
         for (File excelFile : inputExcels) {
 
-            if (!excelFile.getName().equals("Businesses_Where_RV_less_than_12000.xls")) {
-                continue;
-            }
+//            if (!excelFile.getName().equals("bis-13-1262-long-run-income-elasticities-DATA.xls.xlsx")) {
+//                continue;
+//            }
 
             System.out.println(excelFile.getName());
-            TheExcelFileReader excelFileReader = new TheExcelFileReader(excelFile.getPath());
-            Workbook workbook = null;
-            try {
-                workbook = excelFileReader.loadWorkBook();
-            } catch (OldExcelFormatException e) {
-                e.printStackTrace();
-            }
 
-            if (workbook == null) {
-                continue;
-            }
-
-            PoiWorkBookProcessor processor = new PoiWorkBookProcessor(workbook);
-            processor.process();
-
+            ExcelFileReader excelFileReader = new ExcelFileReader(excelFile.getPath());
+            excelFileReader.digestExcelFile();
         }
     }
 }
