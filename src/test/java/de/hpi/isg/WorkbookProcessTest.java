@@ -1,12 +1,12 @@
 package de.hpi.isg;
 
-import de.hpi.isg.io.ExcelFileReader;
+import de.hpi.isg.io.TheExcelFileReader;
+import org.apache.poi.hssf.OldExcelFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * @author Lan Jiang
@@ -26,8 +26,13 @@ public class WorkbookProcessTest {
             }
 
             System.out.println(excelFile.getName());
-            ExcelFileReader excelFileReader = new ExcelFileReader(excelFile.getPath());
-            Workbook workbook = excelFileReader.loadWorkBook();
+            TheExcelFileReader excelFileReader = new TheExcelFileReader(excelFile.getPath());
+            Workbook workbook = null;
+            try {
+                workbook = excelFileReader.loadWorkBook();
+            } catch (OldExcelFormatException e) {
+
+            }
 
             if (workbook == null) {
                 continue;

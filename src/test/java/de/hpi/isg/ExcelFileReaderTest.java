@@ -1,6 +1,6 @@
 package de.hpi.isg;
 
-import de.hpi.isg.io.ExcelFileReader;
+import de.hpi.isg.io.TheExcelFileReader;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,7 +16,7 @@ public class ExcelFileReaderTest {
 
     @Test
     public void testLoadWorkbook() throws IOException {
-        ExcelFileReader excelFileReader = new ExcelFileReader(Objects.requireNonNull(getClass().getClassLoader().getResource("1-qtr-2011-directors.xls")).getPath());
+        TheExcelFileReader excelFileReader = new TheExcelFileReader(Objects.requireNonNull(getClass().getClassLoader().getResource("1-qtr-2011-directors.xls")).getPath());
         Workbook workbook = excelFileReader.loadWorkBook();
         Assert.assertNotNull(workbook);
     }
