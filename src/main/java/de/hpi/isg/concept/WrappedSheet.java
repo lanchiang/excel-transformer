@@ -1,4 +1,4 @@
-package de.hpi.isg;
+package de.hpi.isg.concept;
 
 import lombok.Getter;
 

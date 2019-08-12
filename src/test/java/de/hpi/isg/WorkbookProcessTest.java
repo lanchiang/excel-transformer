@@ -31,15 +31,16 @@ public class WorkbookProcessTest {
             try {
                 workbook = excelFileReader.loadWorkBook();
             } catch (OldExcelFormatException e) {
-
+                e.printStackTrace();
             }
 
             if (workbook == null) {
                 continue;
             }
 
-            WorkbookProcessor workbookProcessor = new WorkbookProcessor(workbook);
-            workbookProcessor.processWorkbook();
+            PoiWorkBookProcessor processor = new PoiWorkBookProcessor(workbook);
+            processor.process();
+
         }
     }
 }

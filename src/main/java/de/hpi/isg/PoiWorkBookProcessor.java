@@ -1,32 +1,37 @@
 package de.hpi.isg;
 
-import de.hpi.isg.io.SheetToTextFileWriter;
+import de.hpi.isg.concept.WrappedSheet;
+import lombok.Getter;
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author Lan Jiang
- * @since 2019-08-06
+ * @since 2019-08-12
  */
-public class WorkbookProcessor {
+public class PoiWorkBookProcessor extends WorkBookProcessor {
 
     private final Workbook workbook;
 
     private final FormulaEvaluator evaluator;
 
-    public WorkbookProcessor(Workbook workbook) {
+    @Getter
+    private WrappedSheet wrappedSheet;
+
+    public PoiWorkBookProcessor(Workbook workbook) {
         this.workbook = workbook;
-        evaluator = (workbook instanceof HSSFWorkbook) ? new HSSFFormulaEvaluator((HSSFWorkbook) this.workbook) : new XSSFFormulaEvaluator((XSSFWorkbook) this.workbook);
+        evaluator = (workbook instanceof HSSFWorkbook) ? new HSSFFormulaEvaluator((HSSFWorkbook)
+                this.workbook) : new XSSFFormulaEvaluator((XSSFWorkbook) this.workbook);
     }
 
-    public void processWorkbook() {
+    @Override
+    public void process() {
         int numOfSheets = workbook.getNumberOfSheets();
 
         for (int i = 0; i < numOfSheets; i++) {
@@ -40,17 +45,17 @@ public class WorkbookProcessor {
             }
 
             List<List<String>> curatedSheetData = processSheet(sheet);
-            WrappedSheet wrappedSheet = new WrappedSheet(workbook.getSheetName(i), curatedSheetData);
+            wrappedSheet = new WrappedSheet(workbook.getSheetName(i), curatedSheetData);
 
-            try {
-                SheetToTextFileWriter writer = new SheetToTextFileWriter(wrappedSheet.getSheetFileName());
-                for (List<String> curatedRow : curatedSheetData) {
-                    writer.writeLine(curatedRow);
-                }
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                SheetToTextFileWriter writer = new SheetToTextFileWriter(wrappedSheet.getSheetFileName());
+//                for (List<String> curatedRow : curatedSheetData) {
+//                    writer.writeLine(curatedRow);
+//                }
+//                writer.close();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 

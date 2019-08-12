@@ -1,7 +1,6 @@
 package de.hpi.isg.io;
 
 import org.apache.poi.hssf.OldExcelFormatException;
-import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
