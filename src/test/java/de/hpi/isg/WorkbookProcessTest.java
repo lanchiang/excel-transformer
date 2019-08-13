@@ -1,10 +1,7 @@
 package de.hpi.isg;
 
-import de.hpi.isg.exceptions.FormulaParseException;
+import de.hpi.isg.exceptions.ExcelFileReadingException;
 import de.hpi.isg.io.ExcelFileReader;
-import de.hpi.isg.io.TheExcelFileReader;
-import org.apache.poi.hssf.OldExcelFormatException;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 
 import java.io.File;
@@ -17,7 +14,7 @@ import java.io.IOException;
 public class WorkbookProcessTest {
 
     @Test
-    public void testProcessSheet() throws IOException {
+    public void testProcessSheet() throws IOException, ExcelFileReadingException {
         File[] inputExcels = new File("/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk").listFiles();
 
         File inputExcelFileFolder = new File("/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk_converted");
@@ -31,7 +28,7 @@ public class WorkbookProcessTest {
         assert inputExcels != null;
         for (File excelFile : inputExcels) {
 
-//            if (!excelFile.getName().equals("bis-13-1262-long-run-income-elasticities-DATA.xls.xlsx")) {
+//            if (!excelFile.getName().equals("remands-magistrates-court-tool-2016.xlsx")) {
 //                continue;
 //            }
 

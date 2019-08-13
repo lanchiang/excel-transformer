@@ -1,6 +1,7 @@
 package de.hpi.isg.io;
 
 import com.opencsv.CSVWriter;
+import de.hpi.isg.concept.WrappedSheet;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,20 +18,27 @@ public class SheetToTextFileWriter {
     private final CSVWriter csvWriter;
 
     public SheetToTextFileWriter(String filePath) throws IOException {
-        filePath = "/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk_converted/" + filePath;
-
         if (!filePath.endsWith(".csv")) {
             filePath = filePath + ".csv";
         }
-        csvWriter = new CSVWriter(new FileWriter(filePath));
+
+        String outputFilePath = filePath;
+        csvWriter = new CSVWriter(new FileWriter(outputFilePath));
     }
 
-    public void writeLine(List<String> curatedRow) {
+    public void write(WrappedSheet wrappedSheet) throws IOException {
+        for (List<String> curatedRow : wrappedSheet.getCuratedSheetData()) {
+            writeLine(curatedRow);
+        }
+        close();
+    }
+
+    private void writeLine(List<String> curatedRow) {
         String[] curatedRowArray = curatedRow.toArray(new String[0]);
         csvWriter.writeNext(curatedRowArray);
     }
 
-    public void close() throws IOException {
+    private void close() throws IOException {
         csvWriter.close();
     }
 }
