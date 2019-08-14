@@ -8,7 +8,7 @@ import java.io.File;
  */
 public class FileUtils {
 
-    private final static String MAC_DS_STORE = "DS_Store.";
+    private final static String MAC_DS_STORE = ".DS_Store";
 
     /**
      * Return true if the given file should not be processed by the caller function.
@@ -18,8 +18,8 @@ public class FileUtils {
      */
     public static boolean shouldNotProcess(File file) {
         if (file.getName().equals(MAC_DS_STORE)) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 }
