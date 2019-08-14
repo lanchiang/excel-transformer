@@ -65,6 +65,13 @@
             <version>4.0</version>
         </dependency>
 
+        <!-- string similarity -->
+        <dependency>
+            <groupId>info.debatty</groupId>
+            <artifactId>java-string-similarity</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+
         <!-- jcommander -->
         <dependency>
             <groupId>com.beust</groupId>
