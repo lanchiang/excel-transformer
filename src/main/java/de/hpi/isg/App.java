@@ -52,7 +52,7 @@ public class App {
             try {
                 excelFileReader.digestExcelFile();
             } catch (ExcelFileReadingException | IOException e) {
-                bufferedWriter.write(e.getMessage() + "\t" + e.getCause().toString());
+                bufferedWriter.write(e.getMessage() + "\t" + e.getClass().getName());
                 bufferedWriter.newLine();
                 continue;
             }

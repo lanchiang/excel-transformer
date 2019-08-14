@@ -4,9 +4,11 @@ import de.hpi.isg.PoiWorkBookProcessor;
 import de.hpi.isg.concept.WrappedSheet;
 import de.hpi.isg.exceptions.ExcelFileReadingException;
 import lombok.Getter;
+import org.apache.poi.EmptyFileException;
 import org.apache.poi.hssf.OldExcelFormatException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ooxml.POIXMLException;
+import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.apache.poi.poifs.filesystem.NotOLE2FileException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -45,7 +47,7 @@ public class ExcelFileReader {
         Workbook poiWorkBook;
         try {
             poiWorkBook = WorkbookFactory.create(file);
-        } catch (OldExcelFormatException | NotOLE2FileException | POIXMLException e) {
+        } catch (OldExcelFormatException | NotOLE2FileException | POIXMLException | EmptyFileException e) {
             throw new ExcelFileReadingException(file.getName(), e);
         }
 
@@ -56,13 +58,11 @@ public class ExcelFileReader {
 
             this.wrappedSheets = processor.getWrappedSheets();
 
-            poiWorkBook.close();
+            try {
+                poiWorkBook.close();
+            } catch (Exception e) {
+                throw new ExcelFileReadingException(file.getName(), e);
+            }
         }
-    }
-
-    public static void main(String[] args) throws IOException, ExcelFileReadingException {
-        ExcelFileReader excelFileReader = new ExcelFileReader("/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk/Businesses_Where_RV_less_than_12000.xls");
-//        ExcelFileReader excelFileReader = new ExcelFileReader("/Users/Fuga/Documents/hpi/code/data-downloader/data_excel_uk/1-qtr-2011-directors.xls");
-        excelFileReader.digestExcelFile();
     }
 }
